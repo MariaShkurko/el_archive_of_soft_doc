@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Электронный_архив
 {
@@ -17,19 +18,57 @@ namespace Электронный_архив
             InitializeComponent();
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            Form2 form2 = new Form2();
-            this.Hide();
-            form2.Show();
+            if (!Directory.Exists(".\\Электронный каталог"))
+                Directory.CreateDirectory(".\\Электронный каталог"); //если корневой папки не существует - создаем
+            if (!File.Exists("log.txt"))
+            {
+                using (StreamWriter sw = File.CreateText("log.txt")) //если журнала нет - создаем
+                {
+                    DateTime curDate = DateTime.Now;
+                    sw.WriteLine("Журнал Электронного архива");
+                    sw.WriteLine("Создан: " + curDate);
+                }
+            }
         }
 
-        private void Button2_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            Form3 form3 = new Form3();
-            this.Hide();
-            form3.Show();
-            MessageBox.Show("Вы вошли в систему в качестве гостя! Возможности изменения или добавления файлов вам недоступны.");
+            if ((textBox1.Text == "Admin") && (textBox2.Text == "12345"))
+            {
+                Form4 form4 = new Form4();
+                form4.Show();
+                this.Hide();
+
+                using (StreamWriter sw = new StreamWriter("log.txt", true)) //запись в журнал
+                {
+                    DateTime curDate = DateTime.Now;
+                    sw.WriteLine("-------------------------------------------------------");
+                    sw.WriteLine("Вход: " + textBox1.Text + " " + curDate);
+                    sw.WriteLine("-------------------------------------------------------");
+                }
+            }
+            else MessageBox.Show("Неверный пароль или логин");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((char)e.KeyChar == (Char)Keys.Back) return;
+            if (char.IsDigit(e.KeyChar) || char.IsLetter(e.KeyChar)) return;
+            e.Handled = true;
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((char)e.KeyChar == (Char)Keys.Back) return;
+            if (char.IsDigit(e.KeyChar) || char.IsLetter(e.KeyChar)) return;
+            e.Handled = true;
         }
     }
 }
